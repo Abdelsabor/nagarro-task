@@ -27,7 +27,7 @@ public class AuthenticationService {
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
 	@Autowired
-	private AuthenticationRepresentationDao authenticationRepresentationDao;
+	private AuthenticationRepresentationService authenticationRepresentationService;
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -45,7 +45,7 @@ public class AuthenticationService {
 		Optional<AuthenticationRepresentation> optionalRepresentation;
 
 		try {
-			optionalRepresentation = authenticationRepresentationDao.findById(authenticationRequest.getUsername());
+			optionalRepresentation = authenticationRepresentationService.findById(authenticationRequest.getUsername());
 		} catch (Exception e) {
 			logger.error("Error While Calling Redis {}", e);
 			throw new CommonNagarroException("Error While Calling Redis");
@@ -73,7 +73,7 @@ public class AuthenticationService {
 				authenticationRequest.getUsername(), jwt, tokenTimeInMins);
 
 		try {
-			authenticationRepresentationDao.save(representation);
+			authenticationRepresentationService.save(representation);
 		} catch (Exception e) {
 			logger.error("Error While Calling Redis {}", e);
 			throw new CommonNagarroException("Error While Calling Redis");
@@ -93,12 +93,12 @@ public class AuthenticationService {
 		Optional<AuthenticationRepresentation> optionalRepresentation;
 
 		try {
-			optionalRepresentation = authenticationRepresentationDao.findById(username);
+			optionalRepresentation = authenticationRepresentationService.findById(username);
 		} catch (Exception e) {
 			logger.error("Error While Calling Redis {}", e);
 			throw new CommonNagarroException("Error While Calling Redis");
 		}
-		authenticationRepresentationDao.delete(optionalRepresentation.get());
+		authenticationRepresentationService.delete(optionalRepresentation.get());
 	}
 
 }

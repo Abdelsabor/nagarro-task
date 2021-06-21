@@ -37,6 +37,8 @@ public class AuthorizationTest {
 	private final String AUTH_URL = "/api/authenticate";
 
 	private final String SEARCH_URL = "/api/statement/account/3/search";
+	
+	private final String StatEMENT_URL = "/api/statement";
 
 	private ResponseEntity<List<StatementResponse>> statementResponse;
 
@@ -58,6 +60,18 @@ public class AuthorizationTest {
 
 		statementResponse = testRestTemplate.exchange(SEARCH_URL, HttpMethod.GET,
 				new HttpEntity<>(getTrueHeadersWithToken(response.getBody().getToken())),
+				new ParameterizedTypeReference<List<StatementResponse>>() {
+				});
+
+		Assert.assertEquals(HttpStatus.UNAUTHORIZED, statementResponse.getStatusCode());
+
+	}
+	
+	@Test
+	public void testSearchByUserRoleWithInvalidToken() {
+
+		statementResponse = testRestTemplate.exchange(StatEMENT_URL, HttpMethod.GET,
+				new HttpEntity<>(getTrueHeadersWithToken("")),
 				new ParameterizedTypeReference<List<StatementResponse>>() {
 				});
 
