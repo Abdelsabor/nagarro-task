@@ -43,12 +43,14 @@ public class StatementService {
 					LocalDate statementDate = LocalDate.parse(dateStr, formatter);
 
 					Long accountId = rs.getLong("account_id");
-					return new StatementResponse(hash(accountId.intValue()), statementDate, rs.getDouble("amount"));
+					return new StatementResponse(hash(accountId.intValue()), statementDate,
+							Double.parseDouble(rs.getString("amount")));
 				}
 
 			});
 
-			return filterStatementDate(fullStatement, dateFrom, dateTo);
+			fullStatement = filterStatementDate(fullStatement, dateFrom, dateTo);
+			return filterStatementAmount(fullStatement, amoutFrom, amountTo);
 		} catch (Exception e) {
 			logger.error("Error while calling DB {} ", e);
 			throw new CommonNagarroException("Error While Calling DB");
@@ -89,19 +91,39 @@ public class StatementService {
 		return result;
 	}
 
+	private List<StatementResponse> filterStatementAmount(List<StatementResponse> fullStatement, Double amountFrom,
+			Double amountTo) {
+
+		List<StatementResponse> result = new ArrayList<>();
+
+		if (amountFrom != null && amountTo != null) {
+
+			for (StatementResponse i : fullStatement) {
+				if (i.getAmount() >= amountFrom && i.getAmount() <= amountTo) {
+					result.add(i);
+				}
+			}
+		} else if (amountFrom != null) {
+			for (StatementResponse i : fullStatement) {
+				if (i.getAmount() >= amountFrom) {
+					result.add(i);
+				}
+			}
+		} else if (amountTo != null) {
+			for (StatementResponse i : fullStatement) {
+				if (i.getAmount() <= amountTo) {
+					result.add(i);
+				}
+			}
+		}
+		return result;
+	}
+
 	private String queryBulider(Long accountId, Double amountFrom, Double amountTo) {
 		StringBuilder sb = new StringBuilder("select * from statement");
 
 		if (accountId != null) {
 			sb.append(" where account_id = ").append(accountId);
-		}
-
-		if (amountFrom != null && amountTo != null) {
-			sb.append(" and amount between ").append(amountFrom).append(" and ").append(amountTo);
-		} else if (amountFrom != null) {
-			sb.append(" and amount >= ").append(amountFrom);
-		} else if (amountTo != null) {
-			sb.append(" and amount <= ").append(amountTo);
 		}
 
 		return sb.toString();
