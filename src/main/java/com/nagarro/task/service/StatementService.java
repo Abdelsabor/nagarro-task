@@ -43,7 +43,7 @@ public class StatementService {
 					LocalDate statementDate = LocalDate.parse(dateStr, formatter);
 
 					Long accountId = rs.getLong("account_id");
-					return new StatementResponse(accountId.hashCode(), statementDate, rs.getDouble("amount"));
+					return new StatementResponse(hash(accountId.intValue()), statementDate, rs.getDouble("amount"));
 				}
 
 			});
@@ -106,6 +106,10 @@ public class StatementService {
 
 		return sb.toString();
 
+	}
+
+	private int hash(int num) {
+		return num * 123;
 	}
 
 }
