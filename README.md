@@ -23,3 +23,5 @@ I made 2 change values into DB file to get statment withen 2021 to test apis
 unit test coverage pic is attached
 
 you should have redis up and running into port 6379 and localhost to run the application
+
+use "mvn clean package" to package the jar before run it
