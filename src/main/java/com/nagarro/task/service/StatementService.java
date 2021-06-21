@@ -94,6 +94,10 @@ public class StatementService {
 	private List<StatementResponse> filterStatementAmount(List<StatementResponse> fullStatement, Double amountFrom,
 			Double amountTo) {
 
+		if (amountFrom == null && amountTo == null) {
+			return fullStatement;
+		}
+
 		List<StatementResponse> result = new ArrayList<>();
 
 		if (amountFrom != null && amountTo != null) {
